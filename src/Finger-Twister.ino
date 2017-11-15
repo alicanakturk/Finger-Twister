@@ -13,12 +13,11 @@ Adafruit_TrellisSet trellis =  Adafruit_TrellisSet(&matrix0);
 #define numKeys (16)
 
 int LEDA = 0;
-int LEDB = 5;
-int LEDC = 10;
-int LEDD = 15;
+int LEDB = 6;
+int LEDC = 9;
+int LEDD = 13;
 
-// LEVEL1 = {1, 7, 11, 15}
-// LEVEL2 = {3, 5, 9, 13}
+int gameLevel = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -39,38 +38,40 @@ void setup() {
 void loop() {
   delay(30);
 
+  Serial.println(gameLevel);
+  playGame();
+
+  //  Serial.println(trellis.isKeyPressed(LEDA));
+  trellis.readSwitches();
+  if(trellis.justReleased(LEDA) || trellis.justReleased(LEDB) || trellis.justReleased(LEDC) || trellis.justReleased(LEDD)){
+      Serial.println("ERROR!");
+      gameLevel = 0;
+    }
+  }
+
+void playGame(){
+  gameLevel = 1;
   trellis.setLED(LEDA);
   trellis.writeDisplay();
-  lcd.clear();
-  lcd.print("FIRST FINGER");
-  //
-  // if (trellis.readSwitches()){
-  //     for (uint8_t i=0; i<numKeys; i++) {
-  //     // if it was pressed, turn it on
-  //       if (trellis.justReleased(i)) {
-  //         Serial.println("ERROR!!!");
-  //     }
-  //   }
-  // }
-
-//  Serial.println(trellis.isKeyPressed(LEDA));
 
   if (trellis.readSwitches()){
       for (uint8_t i=0; i<numKeys; i++) {
       // if it was pressed, turn it on
         if (trellis.isKeyPressed(LEDA)) {
-          Serial.println("PRESS!");
+          lcd.clear();
+          lcd.print("FIRST!");
           trellis.setLED(LEDB);
           trellis.writeDisplay();
 
-
           if (trellis.isKeyPressed(LEDA) && trellis.isKeyPressed(LEDB)){
-            Serial.println("YES!");
+            lcd.clear();
+            lcd.print("SECOND!");
             trellis.setLED(LEDC);
             trellis.writeDisplay();
 
             if (trellis.isKeyPressed(LEDA) && trellis.isKeyPressed(LEDB) && trellis.isKeyPressed(LEDC)){
-              Serial.println("NEXT!");
+              lcd.clear();
+              lcd.print("THIRD!");
               trellis.setLED(LEDD);
               trellis.writeDisplay();
 
@@ -80,7 +81,6 @@ void loop() {
                 trellis.clrLED(LEDC);
                 trellis.clrLED(LEDD);
                 trellis.writeDisplay();
-                delay(1000);
                 startAnimation();
 
                 //
@@ -95,6 +95,7 @@ void loop() {
         }
       }
     }
+
 }
 
 
